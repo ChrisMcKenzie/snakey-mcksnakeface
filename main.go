@@ -247,12 +247,12 @@ func intToDir(i int) Direction {
 // we run away from it.
 func closestVulnerableSnakeHead(you Coord, state GameState) *Coord {
 	var closest *Battlesnake
-	for _, snake := range state.Board.Snakes {
-		if snake.Length < state.You.Length {
+	for _, other := range state.Board.Snakes {
+		if other.Length+1 < state.You.Length {
 			if closest == nil {
-				closest = &snake
-			} else if distanceToPoint(you, snake.Head) < distanceToPoint(you, closest.Head) {
-				closest = &snake
+				closest = &other
+			} else if distanceToPoint(you, other.Head) < distanceToPoint(you, closest.Head) {
+				closest = &other
 			}
 		}
 	}
@@ -261,3 +261,32 @@ func closestVulnerableSnakeHead(you Coord, state GameState) *Coord {
 	}
 	return nil
 }
+
+// // If we are
+// func runFromBigSnake(me Battlesnake, others []Battlesnake) *Coord {
+// 	for _, others := range others {
+// 		if me.Length > others.Length {
+// 			// its a smaller snake, ignore
+// 			continue
+// 		}
+
+// 	}
+
+// 	return nil
+// }
+
+// type Target int
+
+// const (
+// 	TargetFood Target = iota
+// 	TargetSnake
+// 	AvoidSnake
+// )
+
+// func targetPriority(you Battlesnake) Target {
+// 	if you.Length < 7 || you.Health < 26 {
+// 		return TargetFood
+// 	}
+
+// 	return TargetSnake
+// }
