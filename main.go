@@ -125,13 +125,9 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 	log.Println("neck", neck)
 	log.Println("coord", coord)
 	// log.Println("head", head)
-	if neck.X < coord.X { // Neck is left of head, don't move left
+	if neck.X != coord.X { // Neck is left of head, don't move left
 		return false
-	} else if neck.X > coord.X { // Neck is right of head, don't move right
-		return false
-	} else if neck.Y < coord.Y { // Neck is below head, don't move down
-		return false
-	} else if neck.Y > coord.Y { // Neck is above head, don't move up
+	} else if neck.Y != coord.Y { // Neck is below head, don't move down
 		return false
 	}
 
