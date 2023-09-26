@@ -103,7 +103,9 @@ func main() {
 }
 
 func moveSafely(state GameState) Coord {
-	coord := randomDirection(state.You.Head)
+	// coord := randomDirection(state.You.Head)
+
+	coord := closestFood(state.You.Head, state)
 
 	isSafe := isSafeMove(coord, state.Board, state.You, state.Board.Snakes)
 	if isSafe {
@@ -114,7 +116,7 @@ func moveSafely(state GameState) Coord {
 
 func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesnake) bool {
 	// Check if the next move is within the boundaries of the board
-	if coord.X < 0 || coord.X >= board.Width || coord.Y < 0 || coord.Y >= board.Height {
+	if coord.X < 0 || coord.X > board.Width || coord.Y < 0 || coord.Y > board.Height {
 		return false
 	}
 
@@ -128,7 +130,7 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 	}
 
 	// Check if the next move would collide with your own snake's body
-	for _, segment := range mySnake.Body[1:] {
+	for _, segment := range mySnake.Body {
 		if coord.X == segment.X && coord.Y == segment.Y {
 			return false
 		}
@@ -136,37 +138,6 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 
 	return true
 }
-
-// func floodFill(grid [][]int, startX, startY, targetX, targetY int, color int) {
-// 	// Check if the start point is valid
-// 	if startX < 0 || startX >= len(grid) || startY < 0 || startY >= len(grid[0]) {
-// 	  return
-// 	}
-
-// 	// Check if the target point is valid
-// 	if startX == targetX && startY == targetY {
-// 	  grid[startX][startY] = color
-// 	  return
-// 	}
-
-// 	// Mark the start point as visited
-// 	grid[startX][startY] = color
-
-// 	// Recursively visit all the neighbors of the start point
-// 	floodFill(grid, startX+1, startY, targetX, targetY, color)
-// 	floodFill(grid, startX-1, startY, targetX, targetY, color)
-// 	floodFill(grid, startX, startY+1, targetX, targetY, color)
-// 	floodFill(grid, startX, startY-1, targetX, targetY, color)
-//   }
-
-//     // Check if the next move would collide with any snake's body
-// for _, snake := range snakes {
-//     for _, segment := range snake.Body {
-//         if x == segment.X && y == segment.Y {
-//             return false
-//         }
-//     }
-// }
 
 func randomDirection(snake Coord) Coord {
 	dir := rand.Intn(len(Directions))
