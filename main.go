@@ -89,6 +89,7 @@ func main() {
 
 func moveSafely(state GameState) Coord {
 	// coord := randomDirection(state.You.Head)
+	// pick closer point, between food and smaller snake
 	coord := closestFood(state.You.Head, state)
 
 	isSafe := isSafeMove(coord, state.Board, state.You, state.Board.Snakes)
@@ -207,7 +208,7 @@ func randomShout() string {
 // 	panic("aaagh unknown direction")
 // }
 
-func closestFood(snake Coord, state GameState) Coord {
+func closestSmallestSnake(snake Coord, state GameState) Coord {
 	var closest *Coord
 	for _, food := range state.Board.Food {
 		if closest == nil {
@@ -218,7 +219,6 @@ func closestFood(snake Coord, state GameState) Coord {
 	}
 	return *closest
 }
-
 func biggerThanSnake(you Battlesnake, snakes []Battlesnake) bool {
 
 	return false
