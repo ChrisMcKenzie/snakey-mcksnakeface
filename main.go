@@ -81,7 +81,7 @@ func move(state GameState) BattlesnakeMoveResponse {
 	nextMove := CoordToDirection(state.You.Head, coord)
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
-	return BattlesnakeMoveResponse{Move: nextMove}
+	return BattlesnakeMoveResponse{Move: nextMove, Shout: "🦀"}
 }
 
 func CoordToDirection(you Coord, dest Coord) Direction {
@@ -130,6 +130,8 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 
 	// Check if the next move would collide with your own snake's body
 	for _, segment := range append(mySnake.Body, mySnake.Head) {
+		log.Printf("%v", segment)
+		log.Printf("%v", coord)
 		if coord.X == segment.X && coord.Y == segment.Y {
 			return false
 		}
