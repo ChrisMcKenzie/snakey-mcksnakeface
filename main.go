@@ -116,8 +116,8 @@ func moveSafely(state GameState, depth int) Coord {
 }
 
 func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesnake) bool {
-	log.Println(coord)
-	log.Println(board)
+	// log.Println(coord)
+	// log.Println(board)
 	// Check if the next move is within the boundaries of the board
 	if coord.X < 0 || coord.X > board.Width || coord.Y < 0 || coord.Y > board.Height {
 		return false
@@ -132,12 +132,12 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 		}
 	}
 
-	neck := mySnake.Body[1]
-	if neck.X == coord.X { // Neck is left of head, don't move left
-		return false
-	} else if neck.Y == coord.Y { // Neck is below head, don't move down
-		return false
-	}
+	// neck := mySnake.Body[1]
+	// if neck.X == coord.X { // Neck is left of head, don't move left
+	// 	return false
+	// } else if neck.Y == coord.Y { // Neck is below head, don't move down
+	// 	return false
+	// }
 
 	// // Check if the next move would collide with your own snake's body
 	for _, segment := range append(mySnake.Body, mySnake.Head) {
