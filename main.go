@@ -109,7 +109,7 @@ func moveSafely(state GameState, depth int) Coord {
 		return coord
 	}
 
-	if depth > 10 {
+	if depth > 50 {
 		return coord
 	}
 	return moveSafely(state, depth+1)
