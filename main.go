@@ -120,16 +120,16 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 	}
 
 	// head := mySnake.Body[0]
-	neck := mySnake.Body[1]
+	// neck := mySnake.Body[1]
 
 	// log.Println("neck", neck)
 	// log.Println("coord", coord)
 	// log.Println("head", head)
-	if neck.X == coord.X { // Neck is left of head, don't move left
-		return false
-	} else if neck.Y == coord.Y { // Neck is below head, don't move down
-		return false
-	}
+	// if neck.X == coord.X { // Neck is left of head, don't move left
+	// 	return false
+	// } else if neck.Y == coord.Y { // Neck is below head, don't move down
+	// 	return false
+	// }
 
 	// // Check if the next move would collide with your own snake's body
 	for _, segment := range append(mySnake.Body, mySnake.Head) {
