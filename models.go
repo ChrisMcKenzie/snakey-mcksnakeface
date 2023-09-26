@@ -73,6 +73,6 @@ type BattlesnakeInfoResponse struct {
 }
 
 type BattlesnakeMoveResponse struct {
-	Move  string `json:"move"`
-	Shout string `json:"shout"`
+	Move  Direction `json:"move"`
+	Shout string    `json:"shout"`
 }

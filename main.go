@@ -14,8 +14,35 @@ package main
 
 import (
 	"log"
+	"math"
 	"math/rand"
 )
+
+type Direction string
+
+const (
+	Up    = "up"
+	Down  = "down"
+	Left  = "left"
+	Right = "right"
+)
+
+var Directions = []Direction{Up, Down, Left, Right}
+
+func intToDir(i int) Direction {
+	switch i {
+	case 0:
+		return Up
+	case 1:
+		return Down
+	case 2:
+		return Left
+	case 3:
+		return Right
+	}
+
+	panic("aaagh unknown direction")
+}
 
 // info is called when you create your Battlesnake on play.battlesnake.com
 // and controls your Battlesnake's appearance
@@ -35,11 +62,13 @@ func info() BattlesnakeInfoResponse {
 // start is called when your Battlesnake begins a game
 func start(state GameState) {
 	log.Println("GAME START")
+	PrintGameState(state)
 }
 
 // end is called when your Battlesnake finishes a game
 func end(state GameState) {
 	log.Printf("GAME OVER\n\n")
+	PrintGameState(state)
 }
 
 // move is called on every turn and returns your next move
@@ -47,63 +76,143 @@ func end(state GameState) {
 // See https://docs.battlesnake.com/api/example-move for available data
 func move(state GameState) BattlesnakeMoveResponse {
 
-	isMoveSafe := map[string]bool{
-		"up":    true,
-		"down":  true,
-		"left":  true,
-		"right": true,
-	}
+	coord := moveSafely(state)
 
-	// We've included code to prevent your Battlesnake from moving backwards
-	myHead := state.You.Body[0] // Coordinates of your head
-	myNeck := state.You.Body[1] // Coordinates of your "neck"
-
-	if myNeck.X < myHead.X { // Neck is left of head, don't move left
-		isMoveSafe["left"] = false
-
-	} else if myNeck.X > myHead.X { // Neck is right of head, don't move right
-		isMoveSafe["right"] = false
-
-	} else if myNeck.Y < myHead.Y { // Neck is below head, don't move down
-		isMoveSafe["down"] = false
-
-	} else if myNeck.Y > myHead.Y { // Neck is above head, don't move up
-		isMoveSafe["up"] = false
-	}
-
-	// TODO: Step 1 - Prevent your Battlesnake from moving out of bounds
-	// boardWidth := state.Board.Width
-	// boardHeight := state.Board.Height
-
-	// TODO: Step 2 - Prevent your Battlesnake from colliding with itself
-	// mybody := state.You.Body
-
-	// TODO: Step 3 - Prevent your Battlesnake from colliding with other Battlesnakes
-	// opponents := state.Board.Snakes
-
-	// Are there any safe moves left?
-	safeMoves := []string{}
-	for move, isSafe := range isMoveSafe {
-		if isSafe {
-			safeMoves = append(safeMoves, move)
-		}
-	}
-
-	if len(safeMoves) == 0 {
-		log.Printf("MOVE %d: No safe moves detected! Moving down\n", state.Turn)
-		return BattlesnakeMoveResponse{Move: "down"}
-	}
-
-	// Choose a random move from the safe ones
-	nextMove := safeMoves[rand.Intn(len(safeMoves))]
-
-	// TODO: Step 4 - Move towards food instead of random, to regain health and survive longer
-	// food := state.Board.Food
+	nextMove := CoordToDirection(state.You.Head, coord)
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
 	return BattlesnakeMoveResponse{Move: nextMove}
 }
 
+func CoordToDirection(you Coord, dest Coord) Direction {
+	if you.X > dest.X {
+		return Left
+	} else if you.X < dest.X {
+		return Right
+	} else if you.Y > dest.Y {
+		return Down
+	} else if you.Y < dest.Y {
+		return Up
+	}
+
+	return ""
+}
+
 func main() {
 	RunServer()
+}
+
+func moveSafely(state GameState) Coord {
+	coord := randomDirection(state.You.Head)
+
+	isSafe := isSafeMove(coord, state.Board, state.You, state.Board.Snakes)
+	if isSafe {
+		return coord
+	}
+	return moveSafely(state)
+}
+
+func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesnake) bool {
+	// Check if the next move is within the boundaries of the board
+	if coord.X < 0 || coord.X >= board.Width || coord.Y < 0 || coord.Y >= board.Height {
+		return false
+	}
+
+	// Check if the next move would collide with any snake's body
+	for _, snake := range snakes {
+		for _, segment := range snake.Body {
+			if coord.X == segment.X && coord.Y == segment.Y {
+				return false
+			}
+		}
+	}
+
+	// Check if the next move would collide with your own snake's body
+	for _, segment := range mySnake.Body[1:] {
+		if coord.X == segment.X && coord.Y == segment.Y {
+			return false
+		}
+	}
+
+	return true
+}
+
+// func floodFill(grid [][]int, startX, startY, targetX, targetY int, color int) {
+// 	// Check if the start point is valid
+// 	if startX < 0 || startX >= len(grid) || startY < 0 || startY >= len(grid[0]) {
+// 	  return
+// 	}
+
+// 	// Check if the target point is valid
+// 	if startX == targetX && startY == targetY {
+// 	  grid[startX][startY] = color
+// 	  return
+// 	}
+
+// 	// Mark the start point as visited
+// 	grid[startX][startY] = color
+
+// 	// Recursively visit all the neighbors of the start point
+// 	floodFill(grid, startX+1, startY, targetX, targetY, color)
+// 	floodFill(grid, startX-1, startY, targetX, targetY, color)
+// 	floodFill(grid, startX, startY+1, targetX, targetY, color)
+// 	floodFill(grid, startX, startY-1, targetX, targetY, color)
+//   }
+
+//     // Check if the next move would collide with any snake's body
+// for _, snake := range snakes {
+//     for _, segment := range snake.Body {
+//         if x == segment.X && y == segment.Y {
+//             return false
+//         }
+//     }
+// }
+
+func randomDirection(snake Coord) Coord {
+	dir := rand.Intn(len(Directions))
+
+	var coord Coord
+	switch intToDir(dir) {
+	case Up:
+		coord = Coord{
+			X: snake.X,
+			Y: snake.Y + 1,
+		}
+	case Down:
+		coord = Coord{
+			X: snake.X,
+			Y: snake.Y - 1,
+		}
+	case Left:
+		coord = Coord{
+			X: snake.X - 1,
+			Y: snake.Y,
+		}
+	case Right:
+		coord = Coord{
+			X: snake.X + 1,
+			Y: snake.Y,
+		}
+	}
+
+	return coord
+}
+
+func closestFood(snake Coord, state GameState) Coord {
+	var closest *Coord
+	for _, food := range state.Board.Food {
+		if closest == nil {
+			closest = &food
+		} else if distanceToPoint(snake, food) < distanceToPoint(snake, *closest) {
+			closest = &food
+		}
+	}
+	return *closest
+}
+
+// manhattan distance |X1 – X2| + |Y1 – Y2|
+func distanceToPoint(snake Coord, point Coord) int {
+	return int(
+		math.Abs(float64(snake.X)-float64(point.X)) +
+			math.Abs(float64(snake.Y)-float64(point.X)))
 }
