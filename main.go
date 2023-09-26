@@ -119,7 +119,7 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 	// log.Println(coord)
 	// log.Println(board)
 	// Check if the next move is within the boundaries of the board
-	if coord.X < 0 || coord.X > board.Width || coord.Y < 0 || coord.Y > board.Height {
+	if coord.X < 0 || coord.X == board.Width || coord.Y < 0 || coord.Y == board.Height {
 		return false
 	}
 
