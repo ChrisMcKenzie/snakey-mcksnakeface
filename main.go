@@ -29,21 +29,6 @@ const (
 
 var Directions = []Direction{Up, Down, Left, Right}
 
-func intToDir(i int) Direction {
-	switch i {
-	case 0:
-		return Up
-	case 1:
-		return Down
-	case 2:
-		return Left
-	case 3:
-		return Right
-	}
-
-	panic("aaagh unknown direction")
-}
-
 // info is called when you create your Battlesnake on play.battlesnake.com
 // and controls your Battlesnake's appearance
 // TIP: If you open your Battlesnake URL in a browser you should see this data
@@ -81,7 +66,7 @@ func move(state GameState) BattlesnakeMoveResponse {
 	nextMove := CoordToDirection(state.You.Head, coord)
 
 	log.Printf("MOVE %d: %s\n", state.Turn, nextMove)
-	return BattlesnakeMoveResponse{Move: nextMove, Shout: "🦀"}
+	return BattlesnakeMoveResponse{Move: nextMove, Shout: randomShout()}
 }
 
 func CoordToDirection(you Coord, dest Coord) Direction {
@@ -128,10 +113,17 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 		}
 	}
 
+	// // Check if the next move would collide with your own snake's body
+	// for _, segment := range append(mySnake.Body, mySnake.Head) {
+	// 	log.Printf("%v", segment)
+	// 	log.Printf("%v", coord)
+	// 	if coord.X == segment.X && coord.Y == segment.Y {
+	// 		return false
+	// 	}
+	// }
+
 	// Check if the next move would collide with your own snake's body
-	for _, segment := range append(mySnake.Body, mySnake.Head) {
-		log.Printf("%v", segment)
-		log.Printf("%v", coord)
+	for _, segment := range mySnake.Body[1:] {
 		if coord.X == segment.X && coord.Y == segment.Y {
 			return false
 		}
@@ -140,35 +132,35 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 	return true
 }
 
-func randomDirection(snake Coord) Coord {
-	dir := rand.Intn(len(Directions))
+// func randomDirection(snake Coord) Coord {
+// 	dir := rand.Intn(len(Directions))
 
-	var coord Coord
-	switch intToDir(dir) {
-	case Up:
-		coord = Coord{
-			X: snake.X,
-			Y: snake.Y + 1,
-		}
-	case Down:
-		coord = Coord{
-			X: snake.X,
-			Y: snake.Y - 1,
-		}
-	case Left:
-		coord = Coord{
-			X: snake.X - 1,
-			Y: snake.Y,
-		}
-	case Right:
-		coord = Coord{
-			X: snake.X + 1,
-			Y: snake.Y,
-		}
-	}
+// 	var coord Coord
+// 	switch intToDir(dir) {
+// 	case Up:
+// 		coord = Coord{
+// 			X: snake.X,
+// 			Y: snake.Y + 1,
+// 		}
+// 	case Down:
+// 		coord = Coord{
+// 			X: snake.X,
+// 			Y: snake.Y - 1,
+// 		}
+// 	case Left:
+// 		coord = Coord{
+// 			X: snake.X - 1,
+// 			Y: snake.Y,
+// 		}
+// 	case Right:
+// 		coord = Coord{
+// 			X: snake.X + 1,
+// 			Y: snake.Y,
+// 		}
+// 	}
 
-	return coord
-}
+// 	return coord
+// }
 
 func closestFood(snake Coord, state GameState) Coord {
 	var closest *Coord
@@ -187,4 +179,47 @@ func distanceToPoint(snake Coord, point Coord) int {
 	return int(
 		math.Abs(float64(snake.X)-float64(point.X)) +
 			math.Abs(float64(snake.Y)-float64(point.X)))
+}
+
+func randomShout() string {
+	shouts := []string{
+		"gophers > crabs",
+		"🪦🦀",
+		"mess with the best die like the rest",
+		"ditto will write golang",
+	}
+
+	return shouts[rand.Intn(len(shouts))]
+}
+
+// func intToDir(i int) Direction {
+// 	switch i {
+// 	case 0:
+// 		return Up
+// 	case 1:
+// 		return Down
+// 	case 2:
+// 		return Left
+// 	case 3:
+// 		return Right
+// 	}
+
+// 	panic("aaagh unknown direction")
+// }
+
+func closestFood(snake Coord, state GameState) Coord {
+	var closest *Coord
+	for _, food := range state.Board.Food {
+		if closest == nil {
+			closest = &food
+		} else if distanceToPoint(snake, food) < distanceToPoint(snake, *closest) {
+			closest = &food
+		}
+	}
+	return *closest
+}
+
+func biggerThanSnake(you Battlesnake, snakes []Battlesnake) bool {
+
+	return false
 }

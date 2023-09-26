@@ -4,6 +4,5 @@ local_resource(
     serve_cmd='./starter-snake-go',
     serve_env={
         'PORT': "80",
-    },
-    deps=['*.go']
+    }
 )
