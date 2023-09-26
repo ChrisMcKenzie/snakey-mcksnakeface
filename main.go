@@ -92,10 +92,10 @@ func moveSafely(state GameState) Coord {
 
 	// pick closer point, between food and smaller snake
 	coord := closestFood(state.You.Head, state)
-	//snake := closestVulnerableSnakeHead(state.You.Head, state)
-	// if snake != nil && distanceToPoint(state.You.Head, *snake) < distanceToPoint(state.You.Head, coord) {
-	// coord = *snake
-	// }
+	snake := closestVulnerableSnakeHead(state.You.Head, state)
+	if snake != nil && distanceToPoint(state.You.Head, *snake) < distanceToPoint(state.You.Head, coord) {
+		coord = *snake
+	}
 
 	isSafe := isSafeMove(coord, state.Board, state.You, state.Board.Snakes)
 	if isSafe {
@@ -122,6 +122,8 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 	head := mySnake.Body[0]
 	neck := mySnake.Body[1]
 
+	log.Println("neck", neck)
+	log.Println("head", head)
 	if neck.X < head.X { // Neck is left of head, don't move left
 		return false
 	} else if neck.X > head.X { // Neck is right of head, don't move right
@@ -226,19 +228,19 @@ func randomShout() string {
 
 // If there is a bigger snake, find its head, and pick a coordinate away from it so
 // we run away from it.
-// func closestVulnerableSnakeHead(you Coord, state GameState) *Coord {
-// 	var closest *Battlesnake
-// 	for _, snake := range state.Board.Snakes {
-// 		if snake.Length < state.You.Length {
-// 			if closest == nil {
-// 				closest = &snake
-// 			} else if distanceToPoint(you, snake.Head) < distanceToPoint(you, closest.Head) {
-// 				closest = &snake
-// 			}
-// 		}
-// 	}
-// 	if closest != nil {
-// 		return &closest.Head
-// 	}
-// 	return nil
-// }
+func closestVulnerableSnakeHead(you Coord, state GameState) *Coord {
+	var closest *Battlesnake
+	for _, snake := range state.Board.Snakes {
+		if snake.Length < state.You.Length {
+			if closest == nil {
+				closest = &snake
+			} else if distanceToPoint(you, snake.Head) < distanceToPoint(you, closest.Head) {
+				closest = &snake
+			}
+		}
+	}
+	if closest != nil {
+		return &closest.Head
+	}
+	return nil
+}
