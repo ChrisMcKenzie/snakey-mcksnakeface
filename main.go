@@ -104,7 +104,6 @@ func main() {
 
 func moveSafely(state GameState) Coord {
 	// coord := randomDirection(state.You.Head)
-
 	coord := closestFood(state.You.Head, state)
 
 	isSafe := isSafeMove(coord, state.Board, state.You, state.Board.Snakes)
@@ -130,7 +129,7 @@ func isSafeMove(coord Coord, board Board, mySnake Battlesnake, snakes []Battlesn
 	}
 
 	// Check if the next move would collide with your own snake's body
-	for _, segment := range mySnake.Body {
+	for _, segment := range append(mySnake.Body, mySnake.Head) {
 		if coord.X == segment.X && coord.Y == segment.Y {
 			return false
 		}
