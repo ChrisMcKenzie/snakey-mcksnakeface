@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -33,6 +34,12 @@ func HandleStart(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleMove(w http.ResponseWriter, r *http.Request) {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered in f", r)
+		}
+	}()
+
 	state := GameState{}
 	err := json.NewDecoder(r.Body).Decode(&state)
 	if err != nil {
